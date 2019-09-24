@@ -17,6 +17,7 @@ use WHMCS\Notification\Contracts\NotificationInterface;
  * @copyright Copyright (c) WHMCS Limited 2005-2017
  * @license http://www.whmcs.com/license/ WHMCS Eula
  */
+
 class telegram implements NotificationModuleInterface
 {
 	use DescriptionTrait;
@@ -231,13 +232,24 @@ class telegram implements NotificationModuleInterface
 		}
 		
 		$message = 'WHMCS: '.$notification->getMessage().' '.$notification->getUrl()."\n".$attributes_output;
-		file_get_contents('https://api.telegram.org/bot'.$moduleSettings['token'].'/sendMessage?chat_id='.$notificationSettings['chatid'].'&text='.urlencode($message).'');
+		$url = 'https://api.telegram.org/bot'.$moduleSettings['token'].'/sendMessage?chat_id='.$notificationSettings['chatid'].'&text='.urlencode($message);
+			$mych = curl_init();
+			curl_setopt($mych, CURLOPT_HEADER, 0);
+			curl_setopt($mych, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($mych, CURLOPT_URL, $url);
+			$data = curl_exec($mych);
+			curl_close($mych);
 		
 		if($notificationSettings['debug']=='on') {
 			$message = json_encode($postData, JSON_PRETTY_PRINT);
 			$message .= json_encode($notificationSettings, JSON_PRETTY_PRINT);
-			file_get_contents('https://api.telegram.org/bot'.$moduleSettings['token'].'/sendMessage?chat_id='.$notificationSettings['chatid'].'&text='.urlencode($message).'');
-			
+			$url = 'https://api.telegram.org/bot'.$moduleSettings['token'].'/sendMessage?chat_id='.$notificationSettings['chatid'].'&text='.urlencode($message);
+			$mych = curl_init();
+			curl_setopt($mych, CURLOPT_HEADER, 0);
+			curl_setopt($mych, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($mych, CURLOPT_URL, $url);
+			$data = curl_exec($mych);
+			curl_close($mych);
 		}
 		/** @var Template $email */
 	}
